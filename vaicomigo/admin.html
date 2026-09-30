@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaiComigo - Administracao</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="navbar"><div class="wrap"><div class="brand"><img src="img/logo.jpg" alt="VaiComigo" class="brand-logo"> <span style="font-size:.85rem;color:var(--suave)">Admin</span></div><nav id="menu"></nav></div></div>
+
+  <div class="container">
+    <div id="sem-acesso" style="display:none">
+      <div class="card"><p class="vazio">Acesso restrito a administradores.</p></div>
+    </div>
+
+    <div id="conteudo" style="display:none">
+      <!-- Metricas -->
+      <div class="grid cols-3">
+        <div class="card"><h3 id="m-usuarios">-</h3><p class="meta">Usuarios</p></div>
+        <div class="card"><h3 id="m-viagens">-</h3><p class="meta">Viagens</p></div>
+        <div class="card"><h3 id="m-denuncias">-</h3><p class="meta">Denuncias pendentes</p></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3>Usuarios</h3>
+        <div id="tab-usuarios"><p class="vazio">Carregando...</p></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3>Denuncias</h3>
+        <div id="tab-denuncias"><p class="vazio">Carregando...</p></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3>Viagens recentes</h3>
+        <div id="tab-viagens"><p class="vazio">Carregando...</p></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3>Auditoria (acoes administrativas)</h3>
+        <div id="tab-auditoria"><p class="vazio">Carregando...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

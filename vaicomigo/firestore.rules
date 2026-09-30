@@ -1,0 +1,71 @@
+rules_version = '2';
+// =========================================================
+// VaiComigo - Regras de seguranca do Firestore
+// Cole em: Firebase Console > Firestore Database > Regras
+// =========================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() { return request.auth != null; }
+    function euSou(uid) { return request.auth.uid == uid; }
+    function ehAdmin() {
+      return logado() &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.admin == true;
+    }
+
+    // Usuarios: cada um le/edita o seu; admin le todos.
+    match /usuarios/{uid} {
+      allow read: if logado();
+      allow create: if euSou(uid);
+      allow update: if euSou(uid) || ehAdmin();
+      allow delete: if ehAdmin();
+    }
+
+    // Veiculos: dono gerencia o seu.
+    match /veiculos/{uid} {
+      allow read: if logado();
+      allow write: if euSou(uid) || ehAdmin();
+    }
+
+    // Viagens: qualquer logado le; motorista dono cria/edita.
+    match /viagens/{id} {
+      allow read: if logado();
+      allow create: if logado() && request.resource.data.motoristaUid == request.auth.uid;
+      allow update: if logado() &&
+        (resource.data.motoristaUid == request.auth.uid || ehAdmin()
+         // permite passageiro reduzir vaga via transacao ao ser aceito
+         || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vagasDisponiveis']));
+      allow delete: if ehAdmin();
+    }
+
+    // Solicitacoes: passageiro cria; motorista/passageiro envolvidos leem/atualizam.
+    match /solicitacoes/{id} {
+      allow read: if logado() &&
+        (resource.data.passageiroUid == request.auth.uid ||
+         resource.data.motoristaUid == request.auth.uid || ehAdmin());
+      allow create: if logado() && request.resource.data.passageiroUid == request.auth.uid;
+      allow update: if logado() &&
+        (resource.data.motoristaUid == request.auth.uid ||
+         resource.data.passageiroUid == request.auth.uid || ehAdmin());
+    }
+
+    // Avaliacoes: logado le; autor cria; imutavel depois.
+    match /avaliacoes/{id} {
+      allow read: if logado();
+      allow create: if logado() && request.resource.data.avaliadorUid == request.auth.uid;
+      allow update, delete: if ehAdmin();
+    }
+
+    // Denuncias: autor cria; apenas admin le/modera.
+    match /denuncias/{id} {
+      allow create: if logado() && request.resource.data.denuncianteUid == request.auth.uid;
+      allow read, update, delete: if ehAdmin();
+    }
+
+    // Auditoria: apenas admin.
+    match /auditoria/{id} {
+      allow read: if ehAdmin();
+      allow create: if ehAdmin();
+    }
+  }
+}

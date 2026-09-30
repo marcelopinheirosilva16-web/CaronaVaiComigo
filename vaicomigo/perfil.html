@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaiComigo - Perfil</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="navbar"><div class="wrap"><div class="brand"><img src="img/logo.jpg" alt="VaiComigo" class="brand-logo"></div><nav id="menu"></nav></div></div>
+
+  <div class="container">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Meus dados</h3>
+        <form onsubmit="salvarPerfil(event)">
+          <div class="form-group"><label>Nome</label><input type="text" id="p-nome"></div>
+          <div class="form-group"><label>Telefone</label><input type="tel" id="p-telefone"></div>
+          <div class="form-group"><label>Cidade</label><input type="text" id="p-cidade"></div>
+          <div class="form-group"><label>Sobre voce</label><textarea id="p-bio" placeholder="Conte um pouco sobre voce"></textarea></div>
+          <div class="form-group">
+            <label><input type="checkbox" id="p-motorista" style="width:auto;margin-right:8px">Quero oferecer caronas (motorista)</label>
+          </div>
+          <button type="submit" class="btn">Salvar alteracoes</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Reputacao</h3>
+        <p class="meta">Nota media: <strong id="p-nota">-</strong> (<span id="p-total">0</span> avaliacoes)</p>
+        <h3 style="margin-top:18px">Avaliacoes recebidas</h3>
+        <div id="lista-avaliacoes"><p class="vazio">Carregando...</p></div>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid var(--borda)">
+        <h3>Seguranca da conta</h3>
+        <button class="btn ghost sm" onclick="reenviarReset()">Redefinir senha por e-mail</button>
+        <button class="btn vermelho sm" onclick="logout()" style="margin-left:8px">Sair da conta</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/perfil.js"></script>
+</body>
+</html>

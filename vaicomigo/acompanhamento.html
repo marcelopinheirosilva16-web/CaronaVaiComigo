@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaiComigo - Acompanhamento em Tempo Real</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- LEAFLET CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        .container-mapa { max-width: 800px; margin: 30px auto; padding: 20px; }
+        #mapa-acompanhamento { width: 100%; height: 450px; border-radius: 12px; margin-top: 15px; border: 1px solid #ddd; }
+        .status-box { padding: 15px; background: #f5f7fa; border-radius: 8px; margin-top: 15px; font-weight: bold; }
+        .voltar { display: inline-block; margin-bottom: 15px; color: #1565c0; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container container-mapa">
+        <a href="painel.html" class="voltar">← Voltar ao Painel</a>
+        <h2>📍 Acompanhamento da Viagem</h2>
+        
+        <div id="status-viagem" class="status-box">
+            🔄 Carregando informações da viagem...
+        </div>
+
+        <div id="mapa-acompanhamento"></div>
+    </div>
+
+    <!-- FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+    <!-- LEAFLET JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- FIREBASE CONFIG E SCRIPTS -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/acompanhamento.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Pega o ID da viagem passado na URL (ex: acompanhamento.html?id=SEU_ID)
+            const urlParams = new URLSearchParams(window.location.search);
+            const viagemId = urlParams.get('id');
+
+            const statusBox = document.getElementById("status-viagem");
+
+            if (!viagemId) {
+                statusBox.innerHTML = "❌ Erro: Nenhum ID de viagem fornecido para acompanhamento.";
+                return;
+            }
+
+            // Inicia o rastreamento em tempo real do motorista
+            if (typeof iniciarAcompanhamentoUsuario === "function") {
+                iniciarAcompanhamentoUsuario(viagemId);
+            } else {
+                statusBox.innerHTML = "❌ Erro: A função de acompanhamento não foi carregada.";
+            }
+        });
+    </script>
+</body>
+</html>

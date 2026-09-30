@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaiComigo - Motorista</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- LEAFLET -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    .voltar-painel {
+      display:inline-flex; align-items:center; gap:7px;
+      margin-bottom:18px; padding:9px 14px; border-radius:9px;
+      border:1px solid #1565c0; background:#fff; color:#1565c0;
+      font-weight:700; text-decoration:none; transition:.15s;
+    }
+    .voltar-painel:hover { background:#1565c0; color:#fff; }
+
+    .pagina-titulo { margin-bottom:18px; }
+    .pagina-titulo h2 { color:#0d47a1; margin-bottom:5px; }
+    .pagina-titulo p { color:#6b7684; font-size:.9rem; }
+
+    #mapa-motorista {
+      width:100%; height:380px; margin-top:18px;
+      border-radius:14px; overflow:hidden; border:1px solid #e0e4ea;
+      box-shadow:0 6px 20px rgba(20,40,80,.08); background:#eef2f7;
+    }
+
+    .gps-status {
+      margin-top:14px; padding:14px; background:#f5f7fa;
+      border:1px solid #e0e4ea; border-radius:10px;
+    }
+    .gps-online { color:#16803c; font-weight:700; }
+    .gps-offline { color:#777; }
+    .gps-erro { color:#c62828; font-weight:700; }
+    .gps-coordenadas { margin-top:9px; font-size:14px; color:#555; }
+
+    .gps-botoes { display:flex; gap:10px; flex-wrap:wrap; margin-top:15px; }
+    .btn-vermelho { background:#c62828; color:white; }
+    .btn-vermelho:hover { background:#a51f1f; }
+
+    .info-motorista {
+      margin-top:12px; padding:12px 14px; background:#eef6ff;
+      border-left:4px solid #1565c0; border-radius:8px;
+      color:#445; font-size:.88rem;
+    }
+
+    #minhas-viagens table { width:100%; border-collapse:collapse; min-width:760px; }
+    #minhas-viagens th, #minhas-viagens td {
+      padding:10px; border-bottom:1px solid #e0e4ea;
+      text-align:left; vertical-align:middle;
+    }
+    #minhas-viagens th { background:#f5f7fa; font-size:13px; }
+    #minhas-viagens .btn { margin:2px; }
+
+    .titulo-viagens { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    #contador-solicitacoes {
+      display:none; align-items:center; justify-content:center;
+      min-width:24px; height:24px; padding:0 7px; border-radius:999px;
+      background:#dc2626; color:#fff; font-size:12px; font-weight:700; line-height:1;
+    }
+
+    #alerta-solicitacao {
+      display:none; position:fixed; right:20px; bottom:20px; z-index:9999;
+      width:calc(100% - 40px); max-width:340px; padding:15px 18px;
+      border-radius:12px; background:#1565c0; color:#fff;
+      box-shadow:0 8px 25px rgba(0,0,0,.20); font-size:14px; line-height:1.4;
+    }
+
+    #modal-solic.aberto { display:block; }
+
+    @media(max-width:600px) {
+      #mapa-motorista { height:320px; }
+      .gps-botoes { flex-direction:column; }
+      .gps-botoes .btn { width:100%; }
+      #alerta-solicitacao { right:10px; bottom:10px; width:calc(100% - 20px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="wrap">
+      <div class="brand">
+        <img src="img/logo.jpg" alt="VaiComigo" class="brand-logo">
+      </div>
+      <nav id="menu"></nav>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="container">
+
+    <a href="painel.html" class="voltar-painel">← Voltar ao painel</a>
+
+    <div class="pagina-titulo">
+      <h2>🚗 Área do motorista</h2>
+      <p>Cadastre seu veículo, publique viagens, aceite passageiros e acompanhe sua localização.</p>
+    </div>
+
+    <div class="grid cols-2">
+
+      <!-- VEÍCULO -->
+      <div class="card">
+        <h3>🚘 Meu veículo</h3>
+        <p class="meta">Cadastre os dados do veículo utilizado nas suas viagens.</p>
+
+        <form onsubmit="salvarVeiculo(event)" style="margin-top:16px;">
+          <div class="form-group">
+            <label for="v-modelo">Modelo</label>
+            <input type="text" id="v-modelo" placeholder="Ex.: Honda Civic" required>
+          </div>
+          <div class="form-group">
+            <label for="v-cor">Cor</label>
+            <input type="text" id="v-cor" placeholder="Ex.: Prata" required>
+          </div>
+          <div class="form-group">
+            <label for="v-placa">Placa</label>
+            <input type="text" id="v-placa" placeholder="ABC1D23" maxlength="7" required>
+          </div>
+          <div class="form-group">
+            <label for="v-lugares">Lugares disponíveis</label>
+            <input type="number" id="v-lugares" min="1" max="8" value="4" required>
+          </div>
+          <button type="submit" class="btn">💾 Salvar veículo</button>
+        </form>
+      </div>
+
+      <!-- CRIAR VIAGEM -->
+      <div class="card">
+        <h3>🛣️ Criar viagem</h3>
+        <p class="meta">Publique sua viagem para que passageiros possam encontrá-la.</p>
+
+        <form onsubmit="criarViagem(event)" style="margin-top:16px;">
+          <div class="form-group">
+            <label for="t-origem">Origem</label>
+            <input type="text" id="t-origem" placeholder="Cidade/bairro de partida" required>
+          </div>
+          <div class="form-group">
+            <label for="t-destino">Destino</label>
+            <input type="text" id="t-destino" placeholder="Cidade/bairro de chegada" required>
+          </div>
+
+          <div class="grid cols-2" style="gap:10px;">
+            <div class="form-group">
+              <label for="t-data">Data</label>
+              <input type="date" id="t-data" required>
+            </div>
+            <div class="form-group">
+              <label for="t-hora">Horário</label>
+              <input type="time" id="t-hora" required>
+            </div>
+          </div>
+
+          <div class="grid cols-2" style="gap:10px;">
+            <div class="form-group">
+              <label for="t-vagas">Vagas</label>
+              <input type="number" id="t-vagas" min="1" max="8" value="3" required>
+            </div>
+            <div class="form-group">
+              <label for="t-valor">Contribuição (R$)</label>
+              <input type="number" id="t-valor" min="0" step="0.50" value="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="t-rota">Rota / pontos de parada</label>
+            <input type="text" id="t-rota" placeholder="Ex.: via Av. Central, Shopping">
+          </div>
+          <div class="form-group">
+            <label for="t-regras">Regras da viagem</label>
+            <textarea id="t-regras" placeholder="Ex.: sem fumar, até 1 mala, pontualidade"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="t-obs">Observações</label>
+            <textarea id="t-obs" placeholder="Alguma informação adicional?"></textarea>
+          </div>
+
+          <button type="submit" class="btn verde block">🚗 Publicar viagem</button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- ACOMPANHAMENTO -->
+    <div class="card" style="margin-top:18px;">
+      <h3>📍 Acompanhamento da viagem</h3>
+      <p class="meta">Quando uma viagem estiver em andamento, sua localização poderá ser compartilhada com os passageiros aceitos.</p>
+
+      <div class="info-motorista">
+        <strong>🔐 Privacidade:</strong> sua localização é compartilhada somente durante uma viagem em andamento.
+      </div>
+
+      <div id="gps-status" class="gps-status gps-offline">
+        ⚪ Nenhuma viagem em andamento.
+      </div>
+
+      <div id="gps-coordenadas" class="gps-coordenadas">
+        Localização não iniciada.
+      </div>
+
+      <div id="mapa-motorista"></div>
+
+      <div class="gps-botoes">
+        <button type="button" class="btn" onclick="iniciarGPSMotoristaManual()">📍 Iniciar GPS</button>
+        <button type="button" class="btn btn-vermelho" onclick="pararGPSMotoristaManual()">⛔ Parar GPS</button>
+        <button type="button" class="btn" onclick="centralizarMotorista()">🎯 Centralizar</button>
+      </div>
+    </div>
+
+    <!-- MINHAS VIAGENS -->
+    <div class="card" style="margin-top:18px;">
+      <h3 class="titulo-viagens">
+        📋 Minhas viagens
+        <span id="contador-solicitacoes" aria-label="0 solicitações pendentes">0</span>
+      </h3>
+      <p class="meta">Aqui aparecem todas as viagens que você publicou, incluindo solicitações de passageiros.</p>
+
+      <div id="minhas-viagens" style="margin-top:15px;">
+        <p class="vazio">🔄 Carregando suas viagens...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL SOLICITAÇÕES -->
+  <div class="modal" id="modal-solic">
+    <div class="box">
+      <button type="button" class="fechar" onclick="fecharSolicitacoesMotorista()" aria-label="Fechar">&times;</button>
+      <h3>👥 Solicitações de vaga</h3>
+      <div id="solic-lista">
+        <p class="vazio">Carregando...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTA DE NOVA SOLICITAÇÃO -->
+  <div id="alerta-solicitacao"></div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <!-- LEAFLET -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- FIREBASE CONFIG E SCRIPTS PRINCIPAIS -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/geolocalizacao.js"></script>
+  <script src="js/motorista.js"></script>
+
+  <!-- SCRIPT DE SEGURANÇA PARA AS FUNÇÕES DO MOTORISTA -->
+  <script>
+    // Garante que os botões do GPS acionem as funções corretas sem quebrar o painel
+    if (typeof window.iniciarGPSMotoristaManual !== "function") {
+      window.iniciarGPSMotoristaManual = function() {
+        if (typeof iniciarRastreamentoMotorista === "function") {
+          iniciarRastreamentoMotorista();
+        } else {
+          console.log("GPS do motorista acionado.");
+        }
+      };
+    }
+
+    if (typeof window.pararGPSMotoristaManual !== "function") {
+      window.pararGPSMotoristaManual = function() {
+        if (typeof pararRastreamentoMotorista === "function") {
+          pararRastreamentoMotorista();
+        } else {
+          console.log("GPS do motorista parado.");
+        }
+      };
+    }
+
+    if (typeof window.centralizarMotorista !== "function") {
+      window.centralizarMotorista = function() {
+        console.log("Centralizando mapa do motorista...");
+      };
+    }
+  </script>
+
+</body>
+</html>

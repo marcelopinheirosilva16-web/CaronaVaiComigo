@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VaiComigo - Entrar</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ==========================================
+        LOGIN
+  =========================================== -->
+
+  <div class="auth-wrap">
+
+    <div class="auth-card">
+
+      <!-- LOGO -->
+      <img
+        src="img/logo.jpg"
+        alt="VaiComigo"
+        class="logo-img"
+      >
+
+      <div class="sub">
+        Caronas que combinam com o seu trajeto
+      </div>
+
+
+      <!-- ======================================
+            ABAS
+      ======================================= -->
+
+      <div class="tabs">
+
+        <button
+          id="tab-login"
+          class="ativo"
+          onclick="mostrarAba('login')"
+        >
+          Entrar
+        </button>
+
+        <button
+          id="tab-cadastro"
+          onclick="mostrarAba('cadastro')"
+        >
+          Criar conta
+        </button>
+
+      </div>
+
+
+      <!-- ======================================
+            ABA LOGIN
+      ======================================= -->
+
+      <section id="aba-login">
+
+        <form onsubmit="fazerLogin(event)">
+
+          <div class="form-group">
+
+            <label for="log-email">
+              E-mail
+            </label>
+
+            <input
+              type="email"
+              id="log-email"
+              placeholder="voce@email.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="log-senha">
+              Senha
+            </label>
+
+            <input
+              type="password"
+              id="log-senha"
+              placeholder="Sua senha"
+              autocomplete="current-password"
+              required
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="btn block"
+          >
+            Entrar
+          </button>
+
+        </form>
+
+
+        <div
+          style="text-align:center;margin-top:12px"
+        >
+
+          <button
+            type="button"
+            class="link-sm"
+            onclick="mostrarAba('recuperar')"
+          >
+            Esqueci minha senha
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+            ABA CADASTRO
+      ======================================= -->
+
+      <section
+        id="aba-cadastro"
+        style="display:none"
+      >
+
+        <form onsubmit="fazerCadastro(event)">
+
+          <!-- NOME -->
+
+          <div class="form-group">
+
+            <label for="cad-nome">
+              Nome completo
+            </label>
+
+            <input
+              type="text"
+              id="cad-nome"
+              placeholder="Seu nome"
+              autocomplete="name"
+              required
+            >
+
+          </div>
+
+
+          <!-- EMAIL -->
+
+          <div class="form-group">
+
+            <label for="cad-email">
+              E-mail
+            </label>
+
+            <input
+              type="email"
+              id="cad-email"
+              placeholder="voce@email.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+
+          <!-- TELEFONE -->
+
+          <div class="form-group">
+
+            <label for="cad-telefone">
+              Telefone (opcional)
+            </label>
+
+            <input
+              type="tel"
+              id="cad-telefone"
+              placeholder="(00) 00000-0000"
+              autocomplete="tel"
+            >
+
+          </div>
+
+
+          <!-- ==================================
+                TIPO DE PERFIL
+          =================================== -->
+
+          <div class="form-group">
+
+            <label for="cad-tipo">
+              Como você deseja utilizar o VaiComigo?
+            </label>
+
+            <select
+              id="cad-tipo"
+              required
+            >
+
+              <option value="">
+                Selecione uma opção
+              </option>
+
+              <option value="passageiro">
+                👤 Passageiro
+              </option>
+
+              <option value="motorista">
+                🚗 Motorista
+              </option>
+
+              <option value="ambos">
+                🔄 Passageiro e Motorista
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- SENHA -->
+
+          <div class="form-group">
+
+            <label for="cad-senha">
+              Senha
+            </label>
+
+            <input
+              type="password"
+              id="cad-senha"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password"
+              required
+            >
+
+          </div>
+
+
+          <!-- CONFIRMAR SENHA -->
+
+          <div class="form-group">
+
+            <label for="cad-senha2">
+              Confirmar senha
+            </label>
+
+            <input
+              type="password"
+              id="cad-senha2"
+              placeholder="Repita a senha"
+              autocomplete="new-password"
+              required
+            >
+
+          </div>
+
+
+          <!-- BOTÃO -->
+
+          <button
+            type="submit"
+            class="btn verde block"
+          >
+            Criar minha conta
+          </button>
+
+        </form>
+
+      </section>
+
+
+      <!-- ======================================
+            ABA RECUPERAÇÃO
+      ======================================= -->
+
+      <section
+        id="aba-recuperar"
+        style="display:none"
+      >
+
+        <p
+          class="meta"
+          style="margin-bottom:14px"
+        >
+          Informe seu e-mail e enviaremos um link
+          para redefinir a senha.
+        </p>
+
+
+        <form onsubmit="recuperarAcesso(event)">
+
+          <div class="form-group">
+
+            <label for="rec-email">
+              E-mail
+            </label>
+
+            <input
+              type="email"
+              id="rec-email"
+              placeholder="voce@email.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="btn block"
+          >
+            Enviar link de recuperação
+          </button>
+
+        </form>
+
+
+        <div
+          style="text-align:center;margin-top:12px"
+        >
+
+          <button
+            type="button"
+            class="link-sm"
+            onclick="mostrarAba('login')"
+          >
+            Voltar ao login
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================
+        TOAST
+  =========================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
+
+  <!-- ==========================================
+        FIREBASE E SCRIPTS
+  =========================================== -->
+
+  <!-- SDKs do Firebase (Versão Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <!-- CONFIGURAÇÃO -->
+  <script src="js/firebase-config.js"></script>
+
+  <!-- FUNÇÕES GERAIS -->
+  <script src="js/common.js"></script>
+
+  <!-- AUTENTICAÇÃO -->
+  <script src="js/auth.js"></script>
+
+</body>
+
+</html>

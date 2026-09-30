@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaiComigo - Seguranca</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="navbar"><div class="wrap"><div class="brand"><img src="img/logo.jpg" alt="VaiComigo" class="brand-logo"></div><nav id="menu"></nav></div></div>
+
+  <div class="container">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Fazer uma denuncia</h3>
+        <p class="meta">Relate comportamentos inadequados. Nossa moderacao analisa cada caso.</p>
+        <form onsubmit="enviarDenuncia(event)" style="margin-top:12px">
+          <div class="form-group"><label>E-mail ou nome do denunciado</label><input type="text" id="d-alvo" placeholder="Quem voce quer denunciar"></div>
+          <div class="form-group"><label>Motivo</label>
+            <select id="d-motivo">
+              <option value="comportamento">Comportamento inadequado</option>
+              <option value="seguranca">Risco a seguranca</option>
+              <option value="fraude">Fraude / cobranca indevida</option>
+              <option value="assedio">Assedio</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Descricao</label><textarea id="d-desc" placeholder="Descreva o ocorrido"></textarea></div>
+          <button type="submit" class="btn vermelho block">Enviar denuncia</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Contatos de emergencia</h3>
+        <table>
+          <tr><th>Policia Militar</th><td><strong>190</strong></td></tr>
+          <tr><th>SAMU</th><td><strong>192</strong></td></tr>
+          <tr><th>Bombeiros</th><td><strong>193</strong></td></tr>
+          <tr><th>Central de Atendimento a Mulher</th><td><strong>180</strong></td></tr>
+          <tr><th>Direitos Humanos</th><td><strong>100</strong></td></tr>
+        </table>
+
+        <h3 style="margin-top:20px">Orientacoes de seguranca</h3>
+        <ul style="margin-left:18px;color:var(--suave);font-size:.9rem;line-height:1.9">
+          <li>Confira a nota e as avaliacoes antes de embarcar.</li>
+          <li>Combine ponto de encontro em local movimentado.</li>
+          <li>Compartilhe o trajeto com alguem de confianca.</li>
+          <li>Confirme placa e modelo do veiculo.</li>
+          <li>Em caso de risco, acione imediatamente o 190.</li>
+          <li>Nunca compartilhe senhas ou dados bancarios.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/seguranca.js"></script>
+</body>
+</html>

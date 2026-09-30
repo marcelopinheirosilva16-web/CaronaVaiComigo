@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <title>VaiComigo - Painel</title>
+
+
+  <!-- CSS PRINCIPAL -->
+
+  <link
+    rel="stylesheet"
+    href="css/style.css">
+
+
+  <!-- LEAFLET -->
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+
+  <style>
+
+    /* ==================================================
+        MAPA DA MINHA LOCALIZAÇÃO
+        ================================================== */
+
+    #mapa-localizacao {
+
+      width: 100%;
+      height: 420px;
+
+      margin-top: 18px;
+
+      border-radius: 16px;
+
+      overflow: hidden;
+
+      border: 1px solid #e0e4ea;
+
+      box-shadow:
+        0 8px 25px rgba(20,40,80,.12);
+
+      background: #e9eef3;
+
+    }
+
+
+    /* ==================================================
+        MAPA DE ACOMPANHAMENTO
+        ================================================== */
+
+    #mapa-acompanhamento {
+
+      width: 100%;
+      height: 420px;
+
+      margin-top: 18px;
+
+      border-radius: 16px;
+
+      overflow: hidden;
+
+      border: 1px solid #e0e4ea;
+
+      box-shadow:
+        0 8px 25px rgba(20,40,80,.12);
+
+      background: #e9eef3;
+
+    }
+
+
+    /* ==================================================
+        INFORMAÇÕES DO ACOMPANHAMENTO
+        ================================================== */
+
+    .acompanhamento-info {
+
+      margin-top: 15px;
+
+      padding: 16px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #f8fafc,
+          #eef4f8
+        );
+
+      border: 1px solid #e0e4ea;
+
+      border-radius: 12px;
+
+    }
+
+
+    .acompanhamento-info strong {
+
+      display: block;
+
+      color: #1565c0;
+
+      margin-bottom: 6px;
+
+    }
+
+
+    /* ==================================================
+        STATUS DA VIAGEM
+        ================================================== */
+
+    .status-viagem {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      font-weight: 700;
+
+      margin: 14px 0;
+
+      padding: 12px 14px;
+
+      border-radius: 10px;
+
+      background: #f5f7fa;
+
+      border: 1px solid #e0e4ea;
+
+    }
+
+
+    .status-online {
+
+      color: #16803c;
+
+      background: #e8f5e9;
+
+      border-color: #c8e6c9;
+
+    }
+
+
+    .status-offline {
+
+      color: #777;
+
+    }
+
+
+    /* ==================================================
+        COORDENADAS
+        ================================================== */
+
+    .coordenadas {
+
+      margin-top: 10px;
+
+      font-size: 14px;
+
+      color: #555;
+
+    }
+
+
+    /* ==================================================
+        BOTÕES DA VIAGEM
+        ================================================== */
+
+    .botoes-viagem {
+
+      display: flex;
+
+      gap: 10px;
+
+      flex-wrap: wrap;
+
+      margin-top: 15px;
+
+    }
+
+
+    .btn-vermelho {
+
+      background: #c62828;
+
+      color: white;
+
+    }
+
+
+    .btn-vermelho:hover {
+
+      background: #a51f1f;
+
+    }
+
+
+    /* ==================================================
+        INFORMAÇÕES DO GPS
+        ================================================== */
+
+    .gps-info {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(150px,1fr)
+        );
+
+      gap: 10px;
+
+      margin-top: 15px;
+
+    }
+
+
+    .gps-box {
+
+      padding: 12px;
+
+      border-radius: 10px;
+
+      background: #f5f7fa;
+
+      border: 1px solid #e0e4ea;
+
+    }
+
+
+    .gps-box strong {
+
+      display: block;
+
+      font-size: .78rem;
+
+      color: #6b7684;
+
+      margin-bottom: 3px;
+
+    }
+
+
+    .gps-box span {
+
+      font-weight: 700;
+
+      color: #1f2933;
+
+    }
+
+
+    /* ==================================================
+        CABEÇALHO DO MAPA
+        ================================================== */
+
+    .mapa-header {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 15px;
+
+      flex-wrap: wrap;
+
+      margin-top: 18px;
+
+    }
+
+
+    .mapa-titulo {
+
+      font-weight: 700;
+
+      color: #1f2933;
+
+    }
+
+
+    .mapa-subtitulo {
+
+      color: #6b7684;
+
+      font-size: .85rem;
+
+      margin-top: 2px;
+
+    }
+
+
+    /* ==================================================
+        BOTÃO CENTRALIZAR
+        ================================================== */
+
+    .btn-localizacao {
+
+      margin-top: 12px;
+
+      background: #1565c0;
+
+      color: #fff;
+
+    }
+
+
+    /* ==================================================
+        CORREÇÃO DOS ÍCONES DO LEAFLET (CAMADAS / MAPA / SATÉLITE)
+        ================================================== */
+    .leaflet-control-layers-toggle {
+      background-image: url("https://unpkg.com/leaflet@1.9.4/dist/images/layers.png") !important;
+      width: 36px !important;
+      height: 36px !important;
+    }
+
+    .leaflet-retina .leaflet-control-layers-toggle {
+      background-image: url("https://unpkg.com/leaflet@1.9.4/dist/images/layers-2x.png") !important;
+    }
+
+    .leaflet-control-layers {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid #e0e4ea;
+    }
+
+
+    /* ==================================================
+        RESPONSIVIDADE
+        ================================================== */
+
+    @media(max-width:768px){
+
+      #mapa-localizacao {
+
+        height: 360px;
+
+        border-radius: 12px;
+
+      }
+
+
+      #mapa-acompanhamento {
+
+        height: 360px;
+
+        border-radius: 12px;
+
+      }
+
+
+      .botoes-viagem {
+
+        flex-direction: column;
+
+      }
+
+
+      .botoes-viagem .btn {
+
+        width: 100%;
+
+      }
+
+    }
+
+
+    @media(max-width:480px){
+
+      #mapa-localizacao {
+
+        height: 320px;
+
+      }
+
+
+      #mapa-acompanhamento {
+
+        height: 320px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- ==================================================
+        NAVBAR
+        ================================================== -->
+
+  <div class="navbar">
+
+    <div class="wrap">
+
+      <div class="brand">
+
+        <img
+          src="img/logo.jpg"
+          alt="VaiComigo"
+          class="brand-logo">
+
+      </div>
+
+
+      <nav id="menu"></nav>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ==================================================
+        CONTEÚDO
+        ================================================== -->
+
+  <div class="container">
+
+
+    <!-- ==================================================
+          SAUDAÇÃO
+          ================================================== -->
+
+    <div
+      class="card"
+      style="margin-bottom:18px">
+
+      <h3 id="ola">
+        Olá!
+      </h3>
+
+
+      <p
+        class="meta"
+        id="resumo">
+
+        Bem-vindo ao VaiComigo.
+
+      </p>
+
+    </div>
+
+
+
+    <!-- ==================================================
+          OPÇÕES
+          ================================================== -->
+
+    <div class="grid cols-3">
+
+
+      <!-- BUSCAR CARONA -->
+
+      <div class="card">
+
+        <h3>
+          Buscar carona
+        </h3>
+
+
+        <p class="meta">
+
+          Encontre viagens que combinam
+          com o seu trajeto.
+
+        </p>
+
+
+        <a
+          href="passageiro.html"
+          class="btn block"
+          style="margin-top:12px">
+
+          Pesquisar viagens
+
+        </a>
+
+      </div>
+
+
+
+      <!-- OFERECER CARONA -->
+
+      <div class="card">
+
+        <h3>
+          Oferecer carona
+        </h3>
+
+
+        <p class="meta">
+
+          Cadastre seu veículo
+          e crie uma viagem.
+
+        </p>
+
+
+        <a
+          href="motorista.html"
+          class="btn verde block"
+          style="margin-top:12px">
+
+          Área do motorista
+
+        </a>
+
+      </div>
+
+
+
+      <!-- SEGURANÇA -->
+
+      <div class="card">
+
+        <h3>
+          Segurança
+        </h3>
+
+
+        <p class="meta">
+
+          Denúncias, orientações
+          e contatos de emergência.
+
+        </p>
+
+
+        <a
+          href="seguranca.html"
+          class="btn ghost block"
+          style="margin-top:12px">
+
+          Central de segurança
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+          MINHA LOCALIZAÇÃO
+          ================================================== -->
+
+    <div
+      class="card"
+      style="margin-top:18px">
+
+
+      <h3>
+        📍 Minha localização
+      </h3>
+
+
+      <p class="meta">
+
+        Encontre sua posição atual no mapa
+        para facilitar a busca por caronas próximas.
+
+      </p>
+
+
+      <!-- STATUS -->
+
+      <div
+        id="status"
+        style="
+          margin-top:14px;
+          padding:12px 14px;
+          border-radius:10px;
+          background:#f5f7fa;
+          color:#6b7684;
+          border:1px solid #e0e4ea;
+        ">
+
+        Clique em "Minha localização"
+        para encontrar sua posição.
+
+      </div>
+
+
+
+      <!-- BOTÃO -->
+
+      <div
+        style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+          margin-top:12px;
+        ">
+
+
+        <button
+          type="button"
+          class="btn"
+          onclick="obterLocalizacao()">
+
+          📍 Minha localização
+
+        </button>
+
+
+        <button
+          type="button"
+          class="btn ghost"
+          onclick="centralizarMinhaLocalizacao()">
+
+          🎯 Centralizar mapa
+
+        </button>
+
+
+      </div>
+
+
+
+      <!-- COORDENADAS -->
+
+      <div
+        id="coordenadas"
+        style="margin-top:15px">
+
+      </div>
+
+
+
+      <!-- TÍTULO DO MAPA -->
+
+      <div class="mapa-header">
+
+        <div>
+
+          <div class="mapa-titulo">
+
+            🗺️ Localização no mapa
+
+          </div>
+
+
+          <div class="mapa-subtitulo">
+
+            Use o controle no canto superior direito
+            para alternar entre mapa e satélite.
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- MAPA -->
+
+      <div
+        id="mapa-localizacao">
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- ==================================================
+          ACOMPANHAMENTO DA VIAGEM
+          ================================================== -->
+
+    <div
+      class="card"
+      style="margin-top:18px">
+
+
+      <h3>
+        🚗 Acompanhamento da viagem
+      </h3>
+
+
+      <p class="meta">
+
+        Acompanhe o veículo durante a viagem.
+
+      </p>
+
+
+
+      <!-- STATUS -->
+
+      <div
+        id="status-viagem"
+        class="status-viagem status-offline">
+
+        ⚪ Nenhuma viagem sendo acompanhada.
+
+      </div>
+
+
+
+      <!-- INFORMAÇÕES -->
+
+      <div
+        class="acompanhamento-info">
+
+
+        <strong>
+
+          🚗 Localização do veículo
+
+        </strong>
+
+
+        <div
+          id="localizacao-veiculo"
+          class="coordenadas">
+
+          Aguardando localização...
+
+        </div>
+
+
+        <div
+          id="ultima-atualizacao"
+          class="coordenadas">
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- CABEÇALHO MAPA -->
+
+      <div class="mapa-header">
+
+        <div>
+
+          <div class="mapa-titulo">
+
+            🛰️ Acompanhamento em tempo real
+
+          </div>
+
+
+          <div class="mapa-subtitulo">
+
+            A posição do veículo aparecerá neste mapa
+            quando o acompanhamento estiver ativo.
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- MAPA -->
+
+      <div
+        id="mapa-acompanhamento">
+
+      </div>
+
+
+
+      <!-- BOTÕES -->
+
+      <div class="botoes-viagem">
+
+
+        <button
+          type="button"
+          class="btn"
+          onclick="iniciarAcompanhamentoUsuario()">
+
+          📍 Iniciar acompanhamento
+
+        </button>
+
+
+
+        <button
+          type="button"
+          class="btn btn-vermelho"
+          onclick="pararAcompanhamentoUsuario()">
+
+          ⛔ Parar acompanhamento
+
+        </button>
+
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- ==================================================
+          SOLICITAÇÕES
+          ================================================== -->
+
+    <div
+      class="card"
+      style="margin-top:18px">
+
+
+      <h3>
+        Minhas solicitações
+      </h3>
+
+
+      <div
+        id="minhas-solic">
+
+        <p class="vazio">
+
+          Carregando...
+
+        </p>
+
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+
+  <!-- ==================================================
+        TOAST
+        ================================================== -->
+
+  <div
+    id="toast"
+    class="toast">
+
+  </div>
+
+
+
+  <!-- ==================================================
+        FIREBASE
+        ================================================== -->
+
+  <script
+    src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js">
+  </script>
+
+
+  <script
+    src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js">
+  </script>
+
+
+  <script
+    src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js">
+  </script>
+
+
+
+  <!-- ==================================================
+        LEAFLET
+        ================================================== -->
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+
+
+
+  <!-- ==================================================
+        JAVASCRIPTS DO SISTEMA
+        ================================================== -->
+
+  <script
+    src="js/firebase-config.js">
+  </script>
+
+
+  <script
+    src="js/common.js">
+  </script>
+
+
+  <script
+    src="js/nav.js">
+  </script>
+
+
+  <script
+    src="js/painel.js">
+  </script>
+
+
+  <!-- GEOLOCALIZAÇÃO + MAPA -->
+
+  <script
+    src="js/geolocalizacao.js">
+  </script>
+
+
+  <!-- ACOMPANHAMENTO -->
+
+  <script
+    src="js/acompanhamento.js">
+  </script>
+
+
+</body>
+
+</html>
